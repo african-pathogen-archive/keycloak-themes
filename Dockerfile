@@ -8,12 +8,12 @@ RUN yarn install --frozen-lockfile
 COPY . /opt/app/
 RUN yarn build-keycloak-theme
 
-FROM docker.io/bitnami/keycloak:20.0.3-debian-11-r14 as builder
-WORKDIR /opt/keycloak
-COPY --from=keycloakify_jar_builder /opt/app/dist_keycloak/keycloak-theme-for-kc-25-and-above.jar /opt/keycloak/providers/
-RUN /opt/keycloak/bin/kc.sh build
+FROM docker.io/bitnami/keycloak:24.0.5-debian-12-r0 as builder
+WORKDIR /opt/bitnami/keycloak
+COPY --from=keycloakify_jar_builder /opt/app/dist_keycloak/keycloak-theme-for-kc-25-and-above.jar /opt/bitnami/keycloak/providers/
+RUN /opt/bitnami/keycloak/bin/kc.sh build
 
-FROM docker.io/bitnami/keycloak:20.0.3-debian-11-r14
-COPY --from=builder /opt/keycloak/ /opt/keycloak/
+FROM docker.io/bitnami/keycloak:24.0.5-debian-12-r0
+COPY --from=builder /opt/bitnami/keycloak /opt/bitnami/keycloak
 ENV KC_HOSTNAME=localhost
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]
+ENTRYPOINT ["/opt/bitnami/keycloak/bin/kc.sh", "start-dev"]
